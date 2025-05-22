@@ -1,0 +1,288 @@
+// Създаване на базата данни
+CREATE DATABASE TOUCAN_ZOO_DB;
+
+
+// Създаване на нашата таблица с записите за зоопарка
+
+CREATE TABLE TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD(
+
+    record_id int autoincrement,
+    json_source VARIANT
+
+)
+
+INSERT INTO TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD(json_source)
+SELECT PARSE_JSON('{
+"zooName": "Cosmic Critters Galactic Zoo",
+"location": "Space Station Delta-7, Sector Gamma-9",
+"establishedDate": "2077-01-01",
+"director": {
+    "name": "Zorp Glorbax",
+    "species": "Xylosian"
+},
+"habitats": [
+    {
+    "id": "H001",
+    "name": "Crystal Caves",
+    "environmentType": "Subterranean",
+    "sizeSqMeters": 1500,
+    "safetyRating": 4.5,
+    "features": ["Luminescent Flora", "Geothermal Vents", "Echo Chambers"],
+    "currentTempCelsius": 15
+    },
+    {
+    "id": "H002",
+    "name": "Azure Aquarium",
+    "environmentType": "Aquatic",
+    "sizeSqMeters": 3000,
+    "safetyRating": 4.8,
+    "features": ["Coral Reef Simulation", "High-Pressure Zone", "Bioluminescent Plankton"],
+    "currentTempCelsius": 22
+    },
+    {
+    "id": "H003",
+    "name": "Floating Forest",
+    "environmentType": "Zero-G Jungle",
+    "sizeSqMeters": 2500,
+    "safetyRating": 4.2,
+    "features": ["Magnetic Vines", "Floating Islands", "Simulated Rain"],
+    "currentTempCelsius": 28
+    },
+    {
+    "id": "H004",
+    "name": "Frozen Tundra",
+    "environmentType": "Arctic",
+    "sizeSqMeters": 1800,
+    "safetyRating": 4.0,
+    "features": ["Ice Caves", "Simulated Aurora"],
+    "currentTempCelsius": -10
+    }
+],
+"creatures": [
+    {
+    "id": "C001",
+    "name": "Gloob",
+    "species": "Gelatinoid",
+    "originPlanet": "Xylar",
+    "diet": "Photosynthesis",
+    "temperament": "Docile",
+    "habitatId": "H001",
+    "acquisitionDate": "2077-01-15",
+    "specialAbilities": null,
+    "healthStatus": { "lastCheckup": "2077-03-01", "status": "Excellent" }
+    },
+    {
+    "id": "C002",
+    "name": "Finblade",
+    "species": "Aqua-Predator",
+    "originPlanet": "Neptunia Prime",
+    "diet": "Carnivore",
+    "temperament": "Aggressive",
+    "habitatId": "H002",
+    "acquisitionDate": "2077-02-01",
+    "specialAbilities": ["Sonar Burst", "Camouflage"],
+    "healthStatus": { "lastCheckup": "2077-03-10", "status": "Good" }
+    },
+    {
+    "id": "C003",
+    "name": "Sky-Wisp",
+    "species": "Aether Flyer",
+    "originPlanet": "Cirrus V",
+    "diet": "Energy Absorption",
+    "temperament": "Shy",
+    "habitatId": "H003",
+    "acquisitionDate": "2077-02-20",
+    "specialAbilities": ["Invisibility", "Phase Shift"],
+    "healthStatus": { "lastCheckup": "2077-03-15", "status": "Fair" }
+    },
+    {
+    "id": "C004",
+    "name": "Krystal Krawler",
+    "species": "Silicate Arthropod",
+    "originPlanet": "Xylar",
+    "diet": "Mineralvore",
+    "temperament": "Neutral",
+    "habitatId": "H001",
+    "acquisitionDate": "2077-03-05",
+    "specialAbilities": ["Crystal Armor", "Burrowing"],
+    "healthStatus": { "lastCheckup": "2077-03-20", "status": "Excellent" }
+    },
+    {
+    "id": "C005",
+    "name": "Ice Strider",
+    "species": "Cryo-Mammal",
+    "originPlanet": "Cryonia",
+    "diet": "Herbivore",
+    "temperament": "Docile",
+    "habitatId": "H004",
+    "acquisitionDate": "2077-03-10",
+    "specialAbilities": ["Thermal Resistance", "Ice Skating"],
+    "healthStatus": { "lastCheckup": "2077-03-25", "status": "Good"}
+    }
+],
+"staff": [
+    {
+    "employeeId": "S001",
+    "name": "Grunga",
+    "role": "Senior Keeper",
+    "species": "Gronk",
+    "assignedHabitatIds": ["H001", "H004"]
+    },
+    {
+    "employeeId": "S002",
+    "name": "Dr. Elara Vance",
+    "role": "Chief Veterinarian",
+    "species": "Human",
+    "assignedHabitatIds": []
+    },
+    {
+    "employeeId": "S003",
+    "name": "Bleep-Bloop",
+    "role": "Maintenance Droid",
+    "species": "Robotic Unit 7",
+    "assignedHabitatIds": ["H002", "H003"]
+    }
+],
+"upcomingEvents": [
+    {
+    "eventId": "E001",
+    "name": "Finblade Feeding Frenzy",
+    "type": "Feeding Show",
+    "scheduledTime": "2077-04-01T14:00:00Z",
+    "locationHabitatId": "H002",
+    "involvedCreatureIds": ["C002"]
+    },
+    {
+    "eventId": "E002",
+    "name": "Sky-Wisp Visibility Demo",
+    "type": "Educational",
+    "scheduledTime": "2077-04-05T11:00:00Z",
+    "locationHabitatId": "H003",
+    "involvedCreatureIds": ["C003"]
+    }
+]
+}')
+
+
+//1. Да се извлекат официалното име на зоологическата градина (zooName) и нейното местоположение (location)
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.ZOO_INFO
+AS
+SELECT json_source['zooName'] AS zoo_name,
+       json_source['location'] AS zoo_location
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD
+
+Select * from TOUCAN_ZOO_DB.PUBLIC.ZOO_INFO
+
+//2. Да се получат името (name) и видът (species) на директора на зоологическата градина.
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.DIRECTOR_INFO
+AS
+SELECT json_source['director']['name'] AS director_name,
+       json_source['director']['species'] AS director_species
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD
+
+//3. Да се изброят името (name) и видът (species) на всяко същество в зоологическата градина.
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.CREATURES_INFO
+AS
+SELECT creature.value:name::STRING AS creature_name,
+       creature.value:species::STRING AS creature_species
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):creatures) AS creature
+
+//4. Да се намерят имената на всички същества, произхождащи от планетата 'Xylar'.
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.CREATURE_XYLAR_INFO
+AS
+SELECT creature.value:name::STRING AS creature_name,
+       creature.value:species::STRING AS creature_species
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):creatures) AS creature
+        
+    WHERE creature.value:originPlanet::STRING = 'Xylar'
+
+
+//5. Да се изброят имената и типовете на средата (environment types) на хабитати, по-големи от 2000 квадратни метра.
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.ENVIROMENT_MORE_THAN_2000
+AS
+SELECT habitat.value:name::STRING AS habitat_name,
+       habitat.value:environmentType::STRING AS habitat_environment_type
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):habitats) AS habitat
+WHERE habitat.value:sizeSqMeters::INT > 2000
+
+
+//6. Да се намерят имената на същества, които притежават специалната способност 'Camouflage' (Камуфлаж).
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.CREATURES_WITH_CAMOUFLAGE
+AS
+SELECT creature.value:name::STRING AS creature_name
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):creatures) AS creature,
+        LATERAL FLATTEN(INPUT => creature.value:specialAbilities) AS ability
+    WHERE ability.value::STRING = 'Camouflage'
+
+//7. Да се изброят имената и здравният статус (полето status вътре в обекта healthStatus) на всички същества, чийто статус НЕ е 'Excellent' (Отличен)
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.CREATURES_NONE_EXCELLENT_STATUS
+AS
+SELECT 
+  creature.value:name::STRING AS creature_name,
+  creature.value:healthStatus.status::STRING AS creature_health_status
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+     LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):creatures) AS creature
+WHERE creature.value:healthStatus.status::STRING != 'Excellent';
+
+
+//8.Да се намерят имената и ролите на служителите, назначени към хабитат 'H001' (Crystal Caves - Кристалните пещери)
+
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.STAFF_MEMBERS_FROM_H001
+AS
+SELECT 
+  staff.value:name::STRING AS member_name
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+     LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):staff) AS staff,
+     LATERAL FLATTEN(INPUT => staff.value:assignedHabitatIds) AS ashabit
+WHERE ashabit.value::STRING = 'H001';
+
+
+
+//9.Да се преброи колко същества пребивават във всеки habitatId. Да се покажат habitatId и броят. 
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.NUMBER_OF_CREATURES_IN_HABITAT
+AS
+SELECT creatures.value:habitatId::STRING AS habitat_name,
+       COUNT(creatures.value:habitatId::String) AS creatures_number
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):creatures) AS creatures
+GROUP BY creatures.value:habitatId::STRING;
+
+
+//10. Да се изброят всички уникални характеристики, налични във всички хабитати. 
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.EVERY_HABITAT
+AS
+SELECT 
+        DISTINCT(feature.value::String) AS feature_type
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):habitats) AS habitat,
+        LATERAL FLATTEN(INPUT => habitat.value:features) AS feature
+GROUP BY feature.value::String;
+
+
+//11. Да се извлекат името, типът и планираното време (като времеви печат - timestamp) за всички предстоящи събития. 
+
+CREATE OR REPLACE VIEW TOUCAN_ZOO_DB.PUBLIC.EVENTS_INFO
+AS
+SELECT 
+        event.value:name::STRING AS name,
+        event.value:type::STRING AS type,
+        TO_TIMESTAMP(event.value:scheduledTime::STRING) AS scheduledTime
+FROM TOUCAN_ZOO_DB.PUBLIC.JSON_ZOO_RECORD zr,
+        LATERAL FLATTEN(INPUT => PARSE_JSON(zr.json_source):upcomingEvents) AS event
+
+
+//12. 
